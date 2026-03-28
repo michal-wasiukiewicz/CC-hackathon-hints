@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSE Modern Grid — Design System v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Brand Colors */
+    --pse-navy: #002D5A; /* Oficjalny granat PSE */
+    --pse-navy-light: #00458A;
+    --pse-accent: #0070E0;
+    --pse-red: #D91B1B;
+    --pse-green: #15803D;
+    --pse-amber: #B45309;
+
+    /* Neutrals - Light Mode Refresh */
+    --bg-app: #F1F5F9;
+    --bg-sidebar: #002347;
+    --bg-card: #FFFFFF;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --border-light: #E2E8F0;
+    --border-focus: #94A3B8;
+
+    /* Layout */
+    --sidebar-width: 240px;
+    --sidebar-collapsed: 64px;
+    --drawer-width: 400px;
+    --header-height: 60px;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    overflow: hidden; /* layout management */
+  }
+
+  /* ───── LAYOUT ───── */
+  .app-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: var(--header-height) 1fr;
+    height: 100vh;
+  }
+
+  /* ───── SIDEBAR (JetBrains Style) ───── */
+  .sidebar {
+    grid-row: 1 / 3;
+    background: var(--bg-sidebar);
+    width: var(--sidebar-width);
+    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+    color: white;
+  }
+
+  .sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+  .sidebar-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .logo-box {
+    min-width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pse-navy);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .nav-group { padding: 12px 0; flex: 1; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+  .nav-item.active { 
+    background: rgba(255,255,255,0.1); 
+    color: white; 
+    border-left-color: var(--pse-accent); 
+  }
+
+  .nav-icon { min-width: 24px; margin-right: 12px; font-size: 18px; display: flex; justify-content: center; }
+
+  /* ───── HEADER ───── */
+  header {
+    background: white;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    justify-content: space-between;
+  }
+
+  .breadcrumb { font-size: 13px; color: var(--text-muted); }
+  .breadcrumb span { color: var(--text-main); font-weight: 500; }
+
+  /* ───── CONTENT ───── */
+  main {
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .page-title { margin-bottom: 24px; }
+  .page-title h1 { font-size: 22px; font-weight: 600; color: var(--pse-navy); }
+  .page-title p { font-size: 14px; color: var(--text-muted); }
+
+  /* ───── UI COMPONENTS ───── */
+  .grid-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+
+  .stat-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 24px; font-weight: 600; margin: 4px 0; font-family: 'IBM Plex Mono'; }
+  .stat-delta { font-size: 12px; font-weight: 500; }
+  .delta-up { color: var(--pse-green); }
+
+  /* ───── DATA TABLE ───── */
+  .card-table {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+
+  .table-filters {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { 
+    background: #F8FAFC; 
+    text-align: left; 
+    padding: 12px 16px; 
+    font-size: 11px; 
+    text-transform: uppercase; 
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-light);
+  }
+  td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border-light); }
+  tr:hover { background: #F8FAFC; }
+
+  /* ───── DRAWER (The "Szuflada") ───── */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    z-index: 100;
+  }
+
+  .drawer {
+    position: fixed;
+    top: 0; right: -450px;
+    width: var(--drawer-width);
+    height: 100vh;
+    background: white;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+    z-index: 101;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer.open { right: 0; }
+
+  .drawer-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .drawer-body { padding: 24px; flex: 1; overflow-y: auto; }
+  .drawer-footer { padding: 16px 20px; border-top: 1px solid var(--border-light); display: flex; gap: 12px; }
+
+  /* ───── FORMS ───── */
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-main); }
+  input, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+  input:focus { outline: none; border-color: var(--pse-accent); box-shadow: 0 0 0 3px rgba(0,112,224,0.1); }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--pse-navy); color: white; }
+  .btn-primary:hover { background: var(--pse-navy-light); }
+  .btn-outline { border-color: var(--border-light); background: white; color: var(--text-main); }
+  .btn-outline:hover { background: #f8fafc; }
+
+  .badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #E2E8F0;
+  }
+  .badge-success { background: #DCFCE7; color: #166534; }
+
+  /* Utility */
+  .flex-row { display: flex; align-items: center; gap: 8px; }
+  .mt-4 { margin-top: 16px; }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-box">P</div>
+      <span style="font-weight: 600; font-size: 18px;">GridManager</span>
+    </div>
+    
+    <div class="nav-group">
+      <div class="nav-item active">
+        <div class="nav-icon">📊</div>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">📈</div>
+        <span>Prognozy KSE</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🔌</div>
+        <span>Węzły sieciowe</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">📝</div>
+        <span>Submisje danych</span>
+      </div>
+    </div>
+
+    <div class="nav-group" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto;">
+      <div class="nav-item" onclick="toggleSidebar()">
+        <div class="nav-icon">⬅️</div>
+        <span>Zwiń menu</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">⚙️</div>
+        <span>Ustawienia</span>
+      </div>
+    </div>
+  </aside>
+
+  <header>
+    <div class="breadcrumb">
+      Aplikacja / <span>Dashboard Systemowy</span>
+    </div>
+    <div class="flex-row">
+      <div class="status-indicator flex-row" style="margin-right: 20px;">
+        <div style="width: 8px; height: 8px; background: var(--pse-green); border-radius: 50%;"></div>
+        <span style="font-size: 12px; font-weight: 500;">System Online</span>
+      </div>
+      <button class="btn btn-primary" onclick="toggleDrawer()">
+        <span>+</span> Nowa Submisja
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title">
+      <h1>Przegląd Systemu Elektroenergetycznego</h1>
+      <p>Stan na dzień 28 marca 2026, godzina 18:25</p>
+    </div>
+
+    <div class="grid-stats">
+      <div class="stat-card">
+        <div class="stat-label">Częstotliwość sieci</div>
+        <div class="stat-value">50.002 Hz</div>
+        <div class="stat-delta delta-up">▲ Stabilna</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Zapotrzebowanie KSE</div>
+        <div class="stat-value">22 450 MW</div>
+        <div class="stat-delta" style="color: var(--pse-red);">▲ Wysokie</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Generacja OZE</div>
+        <div class="stat-value">6 120 MW</div>
+        <div class="stat-delta delta-up">▲ 12% vs wczoraj</div>
+      </div>
+    </div>
+
+    <div class="card-table">
+      <div class="table-filters">
+        <input type="text" placeholder="Szukaj jednostki..." style="width: 250px;">
+        <select style="width: 150px;">
+          <option>Wszystkie statusy</option>
+          <option>Zatwierdzone</option>
+          <option>Oczekujące</option>
+        </select>
+        <button class="btn btn-outline">Filtruj dane</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Jednostki</th>
+            <th>Lokalizacja / Nazwa</th>
+            <th>Typ</th>
+            <th>Moc Dostępna</th>
+            <th>Status</th>
+            <th>Akcja</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family: 'IBM Plex Mono'; font-weight: 500;">JWO-001</td>
+            <td>Bełchatów Blok 1</td>
+            <td>Węglowa</td>
+            <td>850 MW</td>
+            <td><span class="badge badge-success">Operacyjna</span></td>
+            <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;">Szczegóły</button></td>
+          </tr>
+          <tr>
+            <td style="font-family: 'IBM Plex Mono'; font-weight: 500;">JWO-042</td>
+            <td>Kozienice B10</td>
+            <td>Węglowa</td>
+            <td>1075 MW</td>
+            <td><span class="badge badge-success">Operacyjna</span></td>
+            <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;">Szczegóły</button></td>
+          </tr>
+          <tr>
+            <td style="font-family: 'IBM Plex Mono'; font-weight: 500;">OZE-211</td>
+            <td>Farm Wiatrowa Bałtyk Płn.</td>
+            <td>Wiatr</td>
+            <td>420 MW</td>
+            <td><span class="badge">Ograniczona</span></td>
+            <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;">Szczegóły</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="drawer-overlay" id="overlay" onclick="toggleDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h2 style="font-size: 18px; font-weight: 600;">Nowa submisja danych</h2>
+    <button class="btn btn-outline" style="border:none; font-size: 20px;" onclick="toggleDrawer()">×</button>
+  </div>
+  <div class="drawer-body">
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Wprowadź parametry pracy jednostki wytwórczej dla nadchodzącej doby planistycznej.</p>
+    
+    <div class="form-group">
+      <label>Wybierz jednostkę (JWO)</label>
+      <select>
+        <option>JWO-001 Bełchatów</option>
+        <option>JWO-042 Kozienice</option>
+        <option>JWO-007 Turów</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Data planistyczna</label>
+      <input type="date" value="2026-03-29">
+    </div>
+
+    <div class="form-group">
+      <label>Moc dyspozycyjna (MW)</label>
+      <input type="number" placeholder="Np. 450">
+    </div>
+
+    <div class="form-group">
+      <label>Rodzaj zgłoszenia</label>
+      <div class="flex-row mt-4">
+        <input type="radio" name="type" id="t1" checked style="width: auto;"> <label for="t1" style="margin-bottom:0">Standard</label>
+        <input type="radio" name="type" id="t2" style="width: auto; margin-left: 15px;"> <label for="t2" style="margin-bottom:0">Awaryjne</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Dodatkowe uwagi techniczne</label>
+      <textarea rows="4" placeholder="Wpisz opcjonalne uwagi..."></textarea>
+    </div>
+
+    <div style="background: #FFFBEB; padding: 12px; border-radius: 4px; border: 1px solid #FEF3C7; color: #92400E; font-size: 12px;">
+      ⚠️ Przesłanie danych po godzinie 19:00 wymaga kontaktu telefonicznego z dyspozytorem mocy.
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-primary" style="flex: 1; justify-content: center;">Prześlij do PSE</button>
+    <button class="btn btn-outline" onclick="toggleDrawer()">Anuluj</button>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+  }
+
+  function toggleDrawer() {
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('overlay');
+    
+    if(drawer.classList.contains('open')) {
+      drawer.classList.remove('open');
+      overlay.style.display = 'none';
+    } else {
+      drawer.classList.add('open');
+      overlay.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>

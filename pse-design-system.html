@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System — PSE Grid App</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════════
+     DESIGN TOKENS — PSE Energy Grid — Modern Enterprise
+     ═══════════════════════════════════════════════════ */
+  :root {
+    /* Primary Brand — PSE Navy */
+    --color-navy-900: #040E2A;
+    --color-navy-800: #071630;
+    --color-navy-700: #0C2250;
+    --color-navy-600: #0E2D6B;
+    --color-navy-500: #123482;
+    --color-navy-400: #1A4BAD;
+    --color-navy-300: #2D65D0;
+    --color-navy-200: #5B8FE8;
+    --color-navy-100: #A3C0F5;
+    --color-navy-50:  #E8EFFC;
+
+    /* Accent — PSE Red (alerts, critical data) */
+    --color-red-900: #2D0505;
+    --color-red-700: #8B0D0D;
+    --color-red-600: #C01515;
+    --color-red-500: #D91B1B;
+    --color-red-400: #E83535;
+    --color-red-200: #F5A0A0;
+    --color-red-100: #FDDFDF;
+    --color-red-50:  #FEF2F2;
+
+    /* Success — grid stable */
+    --color-green-700: #0F5E2E;
+    --color-green-600: #157A3C;
+    --color-green-500: #1C9E4E;
+    --color-green-200: #7FD4A2;
+    --color-green-100: #CCEEDD;
+    --color-green-50:  #EBF8F1;
+
+    /* Warning — yellow */
+    --color-amber-700: #7A4A00;
+    --color-amber-500: #C97D00;
+    --color-amber-400: #E89300;
+    --color-amber-200: #FFCC6E;
+    --color-amber-100: #FFF0C2;
+    --color-amber-50:  #FFF8E6;
+
+    /* Neutrals */
+    --color-slate-950: #080D16;
+    --color-slate-900: #0F1623;
+    --color-slate-800: #171F30;
+    --color-slate-750: #1E2840;
+    --color-slate-700: #263049;
+    --color-slate-600: #3A4562;
+    --color-slate-500: #56627F;
+    --color-slate-400: #7B8BAA;
+    --color-slate-300: #A5B0C7;
+    --color-slate-200: #CDD4E4;
+    --color-slate-100: #E4E8F3;
+    --color-slate-50:  #F3F5FA;
+    --color-white:     #FFFFFF;
+
+    /* Semantic Aliases */
+    --bg-app:          var(--color-slate-950);
+    --bg-sidebar:      var(--color-navy-800);
+    --bg-surface:      var(--color-slate-900);
+    --bg-card:         var(--color-slate-800);
+    --bg-elevated:     var(--color-slate-750);
+    --bg-hover:        var(--color-slate-700);
+    --bg-input:        var(--color-slate-800);
+
+    --text-primary:    var(--color-white);
+    --text-secondary:  var(--color-slate-300);
+    --text-muted:      var(--color-slate-500);
+    --text-disabled:   var(--color-slate-600);
+    --text-inverse:    var(--color-slate-900);
+
+    --border-subtle:   var(--color-slate-750);
+    --border-default:  var(--color-slate-700);
+    --border-strong:   var(--color-slate-600);
+    --border-focus:    var(--color-navy-300);
+    --border-brand:    var(--color-navy-400);
+
+    --accent-primary:  var(--color-navy-300);
+    --accent-hover:    var(--color-navy-200);
+
+    /* Typography */
+    --font-sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+    --text-xs:   11px;
+    --text-sm:   12px;
+    --text-base: 14px;
+    --text-md:   15px;
+    --text-lg:   18px;
+    --text-xl:   22px;
+    --text-2xl:  28px;
+    --text-3xl:  36px;
+
+    /* Spacing */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+
+    /* Radii */
+    --radius-sm: 3px;
+    --radius-md: 5px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* Sidebar */
+    --sidebar-width: 220px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    background: var(--bg-app);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ───── LAYOUT ───── */
+  .app-shell {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ───── SIDEBAR ───── */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-sidebar);
+    border-right: 1px solid rgba(45, 101, 208, 0.15);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .sidebar-logo .brand-name {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-white);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  .sidebar-logo .brand-sub {
+    font-size: var(--text-xs);
+    color: var(--color-navy-200);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sidebar-logo .brand-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-green-500);
+    margin-right: 6px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+
+  .sidebar-section {
+    padding: 14px 10px 6px;
+  }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-navy-200);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0 6px;
+    margin-bottom: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    color: var(--color-slate-300);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--color-white);
+  }
+
+  .nav-item.active {
+    background: rgba(45, 101, 208, 0.2);
+    color: var(--color-white);
+    font-weight: 500;
+  }
+
+  .nav-item.active .nav-icon { color: var(--color-navy-200); }
+
+  .nav-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--color-red-600);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 20px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 12px 10px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ───── MAIN AREA ───── */
+  .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-app);
+  }
+
+  /* ───── TOPBAR ───── */
+  .topbar {
+    height: 52px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .topbar-breadcrumb {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .topbar-breadcrumb span { color: var(--text-secondary); }
+
+  .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  /* ───── CONTENT ───── */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+  }
+
+  /* ───── SECTION HEADERS ───── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: var(--text-xl);
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  .section-sub {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  h2.heading { font-size: var(--text-lg); font-weight: 500; color: var(--text-primary); }
+  h3.heading { font-size: var(--text-md); font-weight: 500; color: var(--text-primary); }
+  h4.heading { font-size: var(--text-base); font-weight: 500; color: var(--text-secondary); }
+
+  /* ───── KPI CARDS ───── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--kpi-accent, var(--color-navy-400));
+  }
+
+  .kpi-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .kpi-unit {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-left: 4px;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .kpi-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: var(--text-xs);
+    margin-top: 8px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .kpi-delta.up   { background: var(--color-green-100); color: var(--color-green-700); }
+  .kpi-delta.down { background: var(--color-red-100);   color: var(--color-red-700);   }
+  .kpi-delta.flat { background: var(--color-slate-100); color: var(--color-slate-700); }
+
+  /* Dark mode fix for KPI delta */
+  @media (prefers-color-scheme: dark) {
+    .kpi-delta.up   { background: rgba(28,158,78,0.15);  color: var(--color-green-200); }
+    .kpi-delta.down { background: rgba(217,27,27,0.15);  color: var(--color-red-200);   }
+    .kpi-delta.flat { background: rgba(86,98,127,0.2);   color: var(--color-slate-300); }
+  }
+
+  /* ───── CARDS ───── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .card-body { padding: 20px; }
+
+  /* ───── TABLE ───── */
+  .data-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  .data-table thead tr {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .data-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .data-table th:hover { color: var(--text-secondary); }
+
+  .data-table th.sort-asc::after  { content: ' ↑'; color: var(--accent-primary); }
+  .data-table th.sort-desc::after { content: ' ↓'; color: var(--accent-primary); }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.1s;
+  }
+
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: var(--bg-hover); }
+
+  .data-table td {
+    padding: 11px 14px;
+    color: var(--text-secondary);
+    vertical-align: middle;
+  }
+
+  .data-table td.td-primary {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .data-table td.td-mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  /* ───── BADGES ───── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .badge::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.8;
+  }
+
+  .badge-success {
+    background: rgba(28,158,78,0.15);
+    color: var(--color-green-200);
+    border: 1px solid rgba(28,158,78,0.25);
+  }
+
+  .badge-danger {
+    background: rgba(217,27,27,0.15);
+    color: var(--color-red-200);
+    border: 1px solid rgba(217,27,27,0.25);
+  }
+
+  .badge-warning {
+    background: rgba(201,125,0,0.15);
+    color: var(--color-amber-200);
+    border: 1px solid rgba(201,125,0,0.25);
+  }
+
+  .badge-info {
+    background: rgba(45,101,208,0.15);
+    color: var(--color-navy-100);
+    border: 1px solid rgba(45,101,208,0.25);
+  }
+
+  .badge-neutral {
+    background: rgba(86,98,127,0.2);
+    color: var(--color-slate-300);
+    border: 1px solid rgba(86,98,127,0.3);
+  }
+
+  /* ───── BUTTONS ───── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+    white-space: nowrap;
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .btn-primary {
+    background: var(--color-navy-400);
+    border-color: var(--color-navy-400);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--color-navy-300); border-color: var(--color-navy-300); }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--color-slate-500); }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-secondary);
+    padding: 8px 10px;
+  }
+  .btn-ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  .btn-danger {
+    background: transparent;
+    border-color: var(--color-red-600);
+    color: var(--color-red-400);
+  }
+  .btn-danger:hover { background: rgba(217,27,27,0.12); }
+
+  .btn-sm { font-size: 11px; padding: 5px 10px; }
+  .btn-lg { font-size: var(--text-base); padding: 10px 22px; }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ───── FORM ELEMENTS ───── */
+  .form-group { margin-bottom: 18px; }
+
+  .form-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .form-hint {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .form-error {
+    font-size: var(--text-xs);
+    color: var(--color-red-400);
+    margin-top: 4px;
+  }
+
+  .input, .select, .textarea {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+  }
+
+  .input:hover, .select:hover { border-color: var(--color-slate-500); }
+
+  .input:focus, .select:focus, .textarea:focus {
+    border-color: var(--color-navy-300);
+    box-shadow: 0 0 0 3px rgba(45,101,208,0.18);
+  }
+
+  .input::placeholder { color: var(--text-disabled); }
+
+  .input.error { border-color: var(--color-red-600); }
+  .input.error:focus { box-shadow: 0 0 0 3px rgba(217,27,27,0.15); }
+
+  .select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%237B8BAA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  .select option { background: var(--bg-card); }
+
+  .textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+  .input-group {
+    display: flex;
+    gap: 0;
+  }
+
+  .input-group .input-addon {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-right: none;
+    padding: 8px 12px;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .input-group .input { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-navy-400);
+    cursor: pointer;
+  }
+
+  .checkbox-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  /* ───── ALERT / NOTIFICATION BARS ───── */
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+    font-size: var(--text-sm);
+  }
+
+  .alert-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: var(--text-sm);
+  }
+
+  .alert-body { color: var(--text-secondary); font-size: var(--text-sm); }
+
+  .alert-info    { background: rgba(45,101,208,0.08);  border-color: var(--color-navy-400);   color: var(--color-navy-100); }
+  .alert-success { background: rgba(28,158,78,0.08);   border-color: var(--color-green-600);  color: var(--color-green-200); }
+  .alert-warning { background: rgba(201,125,0,0.1);    border-color: var(--color-amber-500);  color: var(--color-amber-200); }
+  .alert-danger  { background: rgba(217,27,27,0.08);   border-color: var(--color-red-600);    color: var(--color-red-200); }
+
+  /* ───── STATUS PILL ───── */
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot.online   { background: var(--color-green-500); box-shadow: 0 0 6px rgba(28,158,78,0.5); }
+  .status-dot.offline  { background: var(--color-slate-600); }
+  .status-dot.warning  { background: var(--color-amber-500); box-shadow: 0 0 6px rgba(201,125,0,0.4); }
+  .status-dot.critical { background: var(--color-red-500);   box-shadow: 0 0 6px rgba(217,27,27,0.5); }
+
+  /* ───── MODAL SKELETON ───── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4,14,42,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    width: min(560px, calc(100vw - 40px));
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title { font-size: var(--text-lg); font-weight: 500; }
+
+  .modal-close {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-md);
+    background: none; border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.1s;
+  }
+
+  .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+  .modal-body { padding: 24px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* ───── DIVIDER ───── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    margin: 24px 0;
+  }
+
+  /* ───── TABS ───── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    padding: 10px 16px;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: var(--font-sans);
+  }
+
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--text-primary); border-bottom-color: var(--accent-primary); }
+
+  /* ───── BREADCRUMB ───── */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--text-secondary); }
+  .breadcrumb .sep { color: var(--text-disabled); }
+  .breadcrumb .current { color: var(--text-secondary); }
+
+  /* ───── EMPTY STATE ───── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 32px;
+    color: var(--text-muted);
+  }
+
+  .empty-state .empty-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  .empty-state .empty-title {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  /* ───── UTILITY ───── */
+  .flex { display: flex; }
+  .flex-col { display: flex; flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-2 { gap: 8px; }
+  .gap-3 { gap: 12px; }
+  .gap-4 { gap: 16px; }
+  .mb-4 { margin-bottom: 16px; }
+  .mb-6 { margin-bottom: 24px; }
+  .mb-8 { margin-bottom: 32px; }
+  .text-sm { font-size: var(--text-sm); }
+  .text-muted { color: var(--text-muted); }
+  .font-mono { font-family: var(--font-mono); }
+
+  /* ───── PAGE DIVIDERS for style guide ───── */
+  .ds-section {
+    margin-bottom: 48px;
+  }
+
+  .ds-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-navy-300);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+
+  .ds-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .ds-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-family: var(--font-mono);
+  }
+
+  .swatch-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+  .swatch {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ds-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .ds-grid-2 { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+  DEMO: Full App Shell (Sidebar + Main)
+═══════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-name">
+        <span class="brand-dot"></span>Grid App
+      </div>
+      <div class="brand-sub">PSE · Dane Sieci</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Przegląd</div>
+      <a class="nav-item active" href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/>
+          <rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>
+        </svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="2,11 6,7 9,10 14,4"/>
+        </svg>
+        Dane systemowe
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2v4m4-2l-4 4-4-4"/><rect x="2" y="9" width="12" height="5" rx="1"/>
+        </svg>
+        Submisje danych
+        <span class="nav-badge">3</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Administracja</div>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/>
+        </svg>
+        Użytkownicy
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="2"/><path d="M8 1v2m0 10v2M1 8h2m10 0h2"/>
+        </svg>
+        Konfiguracja
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="status-row">
+        <span class="status-dot online"></span>
+        <span>System aktywny</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-area">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Dashboard</div>
+        <div class="topbar-breadcrumb">
+          <span>Główna</span> · <span>Dane systemowe</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm">Eksport CSV</button>
+        <button class="btn btn-primary btn-sm">Nowa submisja</button>
+      </div>
+    </div>
+
+    <div class="content" id="main-content">
+
+      <!-- STYLE GUIDE BODY -->
+
+      <!-- TOKENS: COLOR PALETTE -->
+      <div class="ds-section">
+        <div class="ds-section-title">Paleta kolorów — CSS Variables</div>
+        <p class="text-sm text-muted mb-4">Główna paleta marki. Wszystkie kolory mają odpowiednie zmienne CSS <code>--color-*</code>.</p>
+
+        <div class="mb-4">
+          <div class="ds-label">Navy (Primary Brand)</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#E8EFFC" title="navy-50"></div>
+            <div class="swatch" style="background:#A3C0F5" title="navy-100"></div>
+            <div class="swatch" style="background:#5B8FE8" title="navy-200"></div>
+            <div class="swatch" style="background:#2D65D0" title="navy-300"></div>
+            <div class="swatch" style="background:#1A4BAD" title="navy-400"></div>
+            <div class="swatch" style="background:#123482" title="navy-500"></div>
+            <div class="swatch" style="background:#0E2D6B" title="navy-600"></div>
+            <div class="swatch" style="background:#0C2250" title="navy-700"></div>
+            <div class="swatch" style="background:#071630" title="navy-800"></div>
+            <div class="swatch" style="background:#040E2A" title="navy-900"></div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="ds-label">Red (Alert / Critical)</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#FEF2F2"></div>
+            <div class="swatch" style="background:#FDDFDF"></div>
+            <div class="swatch" style="background:#F5A0A0"></div>
+            <div class="swatch" style="background:#E83535"></div>
+            <div class="swatch" style="background:#D91B1B"></div>
+            <div class="swatch" style="background:#C01515"></div>
+            <div class="swatch" style="background:#8B0D0D"></div>
+            <div class="swatch" style="background:#2D0505"></div>
+          </div>
+        </div>
+
+        <div class="ds-grid-2">
+          <div>
+            <div class="ds-label">Green (Success / Stable)</div>
+            <div class="swatch-row">
+              <div class="swatch" style="background:#EBF8F1"></div>
+              <div class="swatch" style="background:#CCEEDD"></div>
+              <div class="swatch" style="background:#7FD4A2"></div>
+              <div class="swatch" style="background:#1C9E4E"></div>
+              <div class="swatch" style="background:#157A3C"></div>
+              <div class="swatch" style="background:#0F5E2E"></div>
+            </div>
+          </div>
+          <div>
+            <div class="ds-label">Amber (Warning)</div>
+            <div class="swatch-row">
+              <div class="swatch" style="background:#FFF8E6"></div>
+              <div class="swatch" style="background:#FFF0C2"></div>
+              <div class="swatch" style="background:#FFCC6E"></div>
+              <div class="swatch" style="background:#E89300"></div>
+              <div class="swatch" style="background:#C97D00"></div>
+              <div class="swatch" style="background:#7A4A00"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TYPOGRAPHY -->
+      <div class="ds-section">
+        <div class="ds-section-title">Typografia — IBM Plex Sans + IBM Plex Mono</div>
+        <div style="margin-bottom:12px; font-size:32px; font-weight:300; letter-spacing:-1px">Dane Sieci Elektroenergetycznej</div>
+        <div style="margin-bottom:12px; font-size:22px; font-weight:500">Raport bilansowania KSE — marzec 2026</div>
+        <div style="margin-bottom:12px; font-size:18px; font-weight:400; color:var(--text-secondary)">Submisja danych dobowych — jednostka wytwórcza JWO</div>
+        <div style="margin-bottom:12px; font-size:14px; color:var(--text-secondary); line-height:1.6">Tekst paragrafowy. Polskie Sieci Elektroenergetyczne prowadzą monitoring jakości handlowego bilansowania portfeli handlowych przez Podmioty Odpowiedzialne za Bilansowanie (POB).</div>
+        <div style="font-family:var(--font-mono); font-size:13px; color:var(--color-navy-200); background:var(--bg-elevated); padding:10px 14px; border-radius:var(--radius-md); border-left:2px solid var(--color-navy-500)">
+          GET /api/v1/submissions?date=2026-03-28&amp;unit=JWO_001 → 200 OK
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- KPI CARDS -->
+      <div class="ds-section">
+        <div class="ds-section-title">KPI Cards</div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--kpi-accent: var(--color-navy-400)">
+            <div class="kpi-label">Zapotrzebowanie KSE</div>
+            <div class="kpi-value">21 840<span class="kpi-unit">MW</span></div>
+            <span class="kpi-delta up">▲ 2.4%</span>
+          </div>
+          <div class="kpi-card" style="--kpi-accent: var(--color-green-600)">
+            <div class="kpi-label">Generacja OZE</div>
+            <div class="kpi-value">8 213<span class="kpi-unit">MW</span></div>
+            <span class="kpi-delta up">▲ 11%</span>
+          </div>
+          <div class="kpi-card" style="--kpi-accent: var(--color-amber-500)">
+            <div class="kpi-label">Saldo wymiany</div>
+            <div class="kpi-value">-412<span class="kpi-unit">MW</span></div>
+            <span class="kpi-delta down">▼ import</span>
+          </div>
+          <div class="kpi-card" style="--kpi-accent: var(--color-red-600)">
+            <div class="kpi-label">Rezerwa wirująca</div>
+            <div class="kpi-value">1 050<span class="kpi-unit">MW</span></div>
+            <span class="kpi-delta flat">— stabilna</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA TABLE -->
+      <div class="ds-section">
+        <div class="ds-section-title">Data Table</div>
+        <div class="card mb-6">
+          <div class="card-header">
+            <span class="card-title">Submisje danych — ostatnie 24h</span>
+            <div class="flex gap-2">
+              <input class="input" style="width:200px" placeholder="Szukaj jednostki...">
+              <button class="btn btn-secondary btn-sm">Filtruj</button>
+            </div>
+          </div>
+          <div class="data-table-wrap" style="border:none; border-radius:0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="sort-asc">Jednostka</th>
+                  <th>Data submisji</th>
+                  <th>Typ danych</th>
+                  <th>Wartość</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-primary">JWO_001 · Bełchatów</td>
+                  <td class="td-mono">2026-03-28 07:14</td>
+                  <td>Dobowy plan pracy</td>
+                  <td class="td-mono">4 850 MW</td>
+                  <td><span class="badge badge-success">Zatwierdzono</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Podgląd</button></td>
+                </tr>
+                <tr>
+                  <td class="td-primary">JWO_042 · Kozienice</td>
+                  <td class="td-mono">2026-03-28 06:58</td>
+                  <td>Dane bilansowe</td>
+                  <td class="td-mono">2 200 MW</td>
+                  <td><span class="badge badge-warning">Weryfikacja</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Podgląd</button></td>
+                </tr>
+                <tr>
+                  <td class="td-primary">JWO_118 · Ostrołęka</td>
+                  <td class="td-mono">2026-03-28 05:30</td>
+                  <td>Dyspozycja mocy</td>
+                  <td class="td-mono">1 800 MW</td>
+                  <td><span class="badge badge-danger">Odrzucono</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Podgląd</button></td>
+                </tr>
+                <tr>
+                  <td class="td-primary">JWO_007 · Turów</td>
+                  <td class="td-mono">2026-03-28 04:11</td>
+                  <td>Dobowy plan pracy</td>
+                  <td class="td-mono">1 490 MW</td>
+                  <td><span class="badge badge-info">Przesłano</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Podgląd</button></td>
+                </tr>
+                <tr>
+                  <td class="td-primary">JWO_053 · Dolna Odra</td>
+                  <td class="td-mono">2026-03-27 23:45</td>
+                  <td>Dane bilansowe</td>
+                  <td class="td-mono">900 MW</td>
+                  <td><span class="badge badge-neutral">Oczekuje</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Podgląd</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGES & STATUS -->
+      <div class="ds-section">
+        <div class="ds-section-title">Badges · Status Indicators</div>
+        <div class="ds-row mb-4">
+          <span class="badge badge-success">Zatwierdzono</span>
+          <span class="badge badge-warning">Weryfikacja</span>
+          <span class="badge badge-danger">Odrzucono</span>
+          <span class="badge badge-info">Przesłano</span>
+          <span class="badge badge-neutral">Oczekuje</span>
+        </div>
+        <div class="ds-row">
+          <div class="status-row"><span class="status-dot online"></span> System aktywny</div>
+          <div class="status-row"><span class="status-dot warning"></span> Przeciążenie węzła</div>
+          <div class="status-row"><span class="status-dot critical"></span> Awaria jednostki</div>
+          <div class="status-row"><span class="status-dot offline"></span> Offline</div>
+        </div>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="ds-section">
+        <div class="ds-section-title">Buttons</div>
+        <div class="ds-row mb-4">
+          <button class="btn btn-primary">Zatwierdź submisję</button>
+          <button class="btn btn-secondary">Eksport CSV</button>
+          <button class="btn btn-ghost">Podgląd</button>
+          <button class="btn btn-danger">Odrzuć</button>
+        </div>
+        <div class="ds-row">
+          <button class="btn btn-primary btn-sm">Mały primary</button>
+          <button class="btn btn-secondary btn-sm">Mały secondary</button>
+          <button class="btn btn-primary btn-lg">Duży primary</button>
+          <button class="btn btn-primary" disabled>Nieaktywny</button>
+        </div>
+      </div>
+
+      <!-- FORMS -->
+      <div class="ds-section">
+        <div class="ds-section-title">Form Elements</div>
+        <div class="ds-grid-2">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Jednostka wytwórcza (JWO)</label>
+              <select class="select">
+                <option>Wybierz jednostkę...</option>
+                <option>JWO_001 · Bełchatów</option>
+                <option>JWO_042 · Kozienice</option>
+                <option>JWO_007 · Turów</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data submisji</label>
+              <input class="input" type="date" value="2026-03-28">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Moc dyspozycyjna</label>
+              <div class="input-group">
+                <span class="input-addon">MW</span>
+                <input class="input" type="number" placeholder="0">
+              </div>
+              <div class="form-hint">Podaj wartość w megawatach (MW)</div>
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label class="form-label">Pole z błędem walidacji</label>
+              <input class="input error" value="niepoprawna wartość">
+              <div class="form-error">Wartość poza dopuszczalnym zakresem (0–6000 MW)</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Uwagi techniczne</label>
+              <textarea class="textarea" placeholder="Opcjonalne uwagi do submisji..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-row">
+                <input type="checkbox" checked>
+                <span class="checkbox-label">Potwierdzam poprawność danych</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="ds-section">
+        <div class="ds-section-title">Alert / Notification Bars</div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div class="alert alert-info">
+            <div>
+              <div class="alert-title">Informacja systemowa</div>
+              <div class="alert-body">Dane bilansowe za okres 27-28 marca 2026 oczekują na zatwierdzenie przez OSP.</div>
+            </div>
+          </div>
+          <div class="alert alert-success">
+            <div>
+              <div class="alert-title">Submisja zatwierdzona</div>
+              <div class="alert-body">JWO_001 · Bełchatów — dobowy plan pracy zatwierdzony o 07:14.</div>
+            </div>
+          </div>
+          <div class="alert alert-warning">
+            <div>
+              <div class="alert-title">Przekroczenie parametru</div>
+              <div class="alert-body">Zapotrzebowanie szczytowe przekracza prognozę o 340 MW. Rezerwa wirująca obniżona.</div>
+            </div>
+          </div>
+          <div class="alert alert-danger">
+            <div>
+              <div class="alert-title">Błąd krytyczny — submisja odrzucona</div>
+              <div class="alert-body">JWO_118 · Ostrołęka — niezgodność danych z planem certyfikowanym. Wymagana korekta.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="ds-section">
+        <div class="ds-section-title">Tabs + Empty State</div>
+        <div class="tabs">
+          <button class="tab active">Wszystkie</button>
+          <button class="tab">Oczekujące (3)</button>
+          <button class="tab">Zatwierdzone</button>
+          <button class="tab">Odrzucone</button>
+        </div>
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-icon">⚡</div>
+            <div class="empty-title">Brak odrzuconych submisji</div>
+            <div class="text-sm text-muted">Wszystkie przesłane dane zostały pozytywnie zweryfikowane.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL SKELETON -->
+      <div class="ds-section">
+        <div class="ds-section-title">Modal — Skeleton</div>
+        <div style="position:relative; min-height:300px; background:rgba(4,14,42,0.6); border-radius:var(--radius-lg); display:flex; align-items:center; justify-content:center; padding:24px">
+          <div class="modal" style="position:relative">
+            <div class="modal-header">
+              <span class="modal-title">Prześlij dane submisji</span>
+              <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label class="form-label">Typ danych</label>
+                <select class="select"><option>Dobowy plan pracy</option></select>
+              </div>
+              <div class="alert alert-warning" style="margin-top:4px">
+                <div class="alert-body">Deadline submisji upływa za <strong>42 minuty</strong>.</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary">Anuluj</button>
+              <button class="btn btn-primary">Prześlij do OSP</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-muted" style="text-align:center; padding: 20px 0 40px">
+        PSE Grid App · Design System v1.0 · IBM Plex Sans + IBM Plex Mono · Hackathon 2026
+      </p>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+</body>
+</html>

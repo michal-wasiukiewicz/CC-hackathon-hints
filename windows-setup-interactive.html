@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hackathon Setup — Windows 10/11</title>
+<style>
+  :root {
+    --bg:        #07090d;
+    --bg2:       #0d1117;
+    --bg3:       #111820;
+    --border:    #1a2535;
+    --green:     #00e676;
+    --green-dim: #00874a;
+    --cyan:      #00d4ff;
+    --cyan-dim:  #007a99;
+    --amber:     #ffb300;
+    --red:       #ff4444;
+    --muted:     #4a5568;
+    --text:      #c9d1d9;
+    --text-dim:  #768390;
+    --glow-g:    0 0 20px rgba(0,230,118,.35), 0 0 40px rgba(0,230,118,.15);
+    --glow-c:    0 0 20px rgba(0,212,255,.35), 0 0 40px rgba(0,212,255,.15);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Courier New',Courier,monospace;
+    font-size:14px;
+    line-height:1.7;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* scanlines overlay */
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);
+    pointer-events:none;z-index:1000;
+  }
+
+  /* grid noise */
+  body::after{
+    content:'';
+    position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(0,230,118,.015) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,230,118,.015) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;z-index:999;
+  }
+
+  /* ── HEADER ── */
+  .header{
+    position:sticky;top:0;z-index:200;
+    background:rgba(7,9,13,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:0 24px;
+  }
+  .header-inner{
+    max-width:900px;margin:0 auto;
+    display:flex;align-items:center;gap:16px;
+    padding:12px 0;
+    flex-wrap:wrap;
+  }
+  .logo{
+    font-size:18px;font-weight:700;
+    color:var(--green);
+    text-shadow:var(--glow-g);
+    letter-spacing:.05em;
+    white-space:nowrap;
+  }
+  .logo span{color:var(--cyan);text-shadow:var(--glow-c)}
+  .header-sub{color:var(--text-dim);font-size:11px;flex:1;min-width:200px}
+
+  /* progress */
+  .progress-wrap{display:flex;align-items:center;gap:10px;min-width:220px}
+  .progress-bar-outer{
+    flex:1;height:6px;background:var(--bg3);
+    border-radius:3px;border:1px solid var(--border);overflow:hidden;
+  }
+  .progress-bar-inner{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,var(--green-dim),var(--green));
+    border-radius:3px;
+    transition:width .4s ease;
+    box-shadow:0 0 8px var(--green);
+  }
+  .progress-text{
+    font-size:12px;color:var(--green);
+    white-space:nowrap;min-width:60px;text-align:right;
+  }
+
+  /* ── HERO ── */
+  .hero{
+    max-width:900px;margin:0 auto;
+    padding:48px 24px 32px;
+    text-align:center;
+  }
+  .hero-badge{
+    display:inline-block;
+    border:1px solid var(--green-dim);
+    color:var(--green);
+    font-size:11px;letter-spacing:.15em;
+    padding:3px 12px;border-radius:2px;
+    margin-bottom:20px;
+    text-transform:uppercase;
+  }
+  .hero h1{
+    font-size:clamp(24px,5vw,42px);
+    font-weight:700;
+    line-height:1.2;
+    color:#fff;
+    margin-bottom:12px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--green);
+    text-shadow:var(--glow-g);
+  }
+  .hero-desc{
+    color:var(--text-dim);
+    font-size:13px;
+    max-width:560px;margin:0 auto 32px;
+  }
+
+  /* stats row */
+  .stats{
+    display:flex;justify-content:center;gap:32px;
+    flex-wrap:wrap;margin-bottom:8px;
+  }
+  .stat{text-align:center}
+  .stat-num{font-size:22px;font-weight:700;color:var(--cyan);display:block}
+  .stat-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
+
+  /* ── LAYOUT ── */
+  .layout{
+    max-width:900px;margin:0 auto;
+    padding:0 24px 80px;
+  }
+
+  /* ── NAV SIDEBAR-ISH (scrollable pill nav) ── */
+  .step-nav{
+    display:flex;gap:6px;flex-wrap:wrap;
+    margin-bottom:32px;
+    padding:16px;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:4px;
+  }
+  .step-nav a{
+    display:flex;align-items:center;gap:5px;
+    padding:4px 10px;
+    font-size:11px;
+    color:var(--text-dim);
+    text-decoration:none;
+    border:1px solid transparent;
+    border-radius:2px;
+    transition:all .2s;
+    white-space:nowrap;
+  }
+  .step-nav a:hover{color:var(--cyan);border-color:var(--cyan-dim)}
+  .step-nav a.done{color:var(--green-dim)}
+  .step-nav a.done .nav-dot{background:var(--green)}
+  .nav-dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--border);flex-shrink:0;
+    transition:background .3s;
+  }
+
+  /* ── STEP CARD ── */
+  .step{
+    margin-bottom:24px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:var(--bg2);
+    overflow:hidden;
+    transition:border-color .3s;
+  }
+  .step.step-done{border-color:var(--green-dim)}
+  .step.step-done .step-header{background:rgba(0,135,74,.08)}
+
+  .step-header{
+    display:flex;align-items:center;gap:14px;
+    padding:16px 20px;
+    cursor:pointer;
+    user-select:none;
+    transition:background .2s;
+  }
+  .step-header:hover{background:rgba(255,255,255,.03)}
+
+  .step-num{
+    width:32px;height:32px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--muted);
+    border-radius:2px;
+    font-size:13px;font-weight:700;
+    color:var(--muted);
+    flex-shrink:0;
+    transition:all .3s;
+  }
+  .step-done .step-num{
+    border-color:var(--green);color:var(--green);
+    box-shadow:0 0 10px rgba(0,230,118,.3);
+  }
+
+  .step-title-wrap{flex:1}
+  .step-title{
+    font-size:15px;font-weight:700;color:#fff;
+    display:flex;align-items:center;gap:8px;
+  }
+  .step-title .tag{
+    font-size:9px;font-weight:400;
+    padding:2px 6px;border-radius:2px;
+    text-transform:uppercase;letter-spacing:.08em;
+  }
+  .tag-req{background:rgba(255,179,0,.12);color:var(--amber);border:1px solid rgba(255,179,0,.3)}
+  .tag-opt{background:rgba(0,212,255,.08);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+
+  .step-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+  .step-toggle{
+    color:var(--muted);font-size:16px;
+    transition:transform .25s;flex-shrink:0;
+  }
+  .step.open .step-toggle{transform:rotate(180deg)}
+
+  .step-done-badge{
+    font-size:10px;color:var(--green);
+    padding:2px 8px;border:1px solid var(--green-dim);
+    border-radius:2px;white-space:nowrap;flex-shrink:0;
+  }
+
+  /* step body */
+  .step-body{
+    display:none;
+    padding:0 20px 20px;
+    border-top:1px solid var(--border);
+  }
+  .step.open .step-body{display:block}
+
+  .step-desc{
+    color:var(--text-dim);
+    font-size:13px;
+    padding:16px 0 12px;
+    line-height:1.8;
+  }
+  .step-desc strong{color:var(--text)}
+  .step-desc a{color:var(--cyan);text-decoration:none}
+  .step-desc .warn{
+    display:inline-flex;align-items:center;gap:6px;
+    color:var(--amber);
+    background:rgba(255,179,0,.08);
+    border:1px solid rgba(255,179,0,.2);
+    border-radius:3px;
+    padding:8px 12px;
+    margin:8px 0;
+    font-size:12px;
+    width:100%;
+  }
+
+  /* code block */
+  .code-block{
+    position:relative;
+    margin:10px 0;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .code-label{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 12px;
+    background:rgba(255,255,255,.03);
+    border-bottom:1px solid var(--border);
+    font-size:10px;color:var(--text-dim);
+    text-transform:uppercase;letter-spacing:.1em;
+  }
+  .copy-btn{
+    background:none;border:1px solid var(--border);
+    color:var(--text-dim);cursor:pointer;
+    padding:2px 8px;border-radius:2px;
+    font-family:inherit;font-size:10px;
+    transition:all .2s;
+  }
+  .copy-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+  .copy-btn.copied{border-color:var(--green);color:var(--green)}
+  .code-block pre{
+    padding:14px 16px;
+    font-size:12.5px;
+    line-height:1.65;
+    overflow-x:auto;
+    color:#e6edf3;
+    white-space:pre;
+  }
+  .code-block pre .c{color:var(--text-dim)} /* comment */
+  .code-block pre .k{color:var(--cyan)}     /* keyword */
+  .code-block pre .s{color:var(--amber)}    /* string */
+  .code-block pre .cmd{color:var(--green)}  /* command */
+
+  /* checklist */
+  .checklist{margin:16px 0 4px}
+  .checklist-title{
+    font-size:10px;color:var(--text-dim);
+    text-transform:uppercase;letter-spacing:.12em;
+    margin-bottom:10px;
+  }
+  .check-item{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:8px 10px;
+    border-radius:3px;
+    margin-bottom:4px;
+    cursor:pointer;
+    transition:background .15s;
+    border:1px solid transparent;
+  }
+  .check-item:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
+  .check-item.checked{background:rgba(0,230,118,.05)}
+  .check-item.checked .check-label{color:var(--text-dim);text-decoration:line-through;text-decoration-color:var(--green-dim)}
+
+  .check-box{
+    width:18px;height:18px;
+    border:1.5px solid var(--muted);
+    border-radius:2px;
+    flex-shrink:0;
+    margin-top:1px;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s;
+    font-size:11px;
+  }
+  .check-item.checked .check-box{
+    background:var(--green);border-color:var(--green);
+    color:#000;
+    box-shadow:0 0 8px rgba(0,230,118,.4);
+  }
+  .check-label{font-size:13px;color:var(--text);transition:color .2s;flex:1}
+  .check-label code{
+    background:var(--bg3);
+    padding:1px 5px;border-radius:2px;
+    color:var(--cyan);font-size:12px;
+  }
+  .check-label .note{
+    display:block;font-size:11px;color:var(--text-dim);margin-top:2px;
+  }
+
+  /* divider */
+  .divider{
+    border:none;border-top:1px solid var(--border);
+    margin:20px 0;
+  }
+  .sub-title{
+    font-size:11px;color:var(--cyan);
+    text-transform:uppercase;letter-spacing:.12em;
+    margin:16px 0 8px;
+    padding-left:2px;
+  }
+
+  /* alt option */
+  .option-tabs{display:flex;gap:0;margin:12px 0 0;border-bottom:1px solid var(--border)}
+  .opt-tab{
+    padding:6px 16px;font-size:12px;cursor:pointer;
+    border:1px solid transparent;border-bottom:none;
+    border-radius:3px 3px 0 0;
+    color:var(--text-dim);transition:all .2s;
+    margin-bottom:-1px;
+    font-family:inherit;background:none;
+  }
+  .opt-tab.active{
+    border-color:var(--border);border-bottom-color:var(--bg2);
+    background:var(--bg2);color:var(--cyan);
+  }
+  .opt-content{display:none}
+  .opt-content.active{display:block}
+
+  /* info box */
+  .info-box{
+    padding:10px 14px;
+    border-radius:3px;
+    margin:12px 0;
+    font-size:12px;
+    line-height:1.7;
+    display:flex;gap:10px;
+    align-items:flex-start;
+  }
+  .info-box.info{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--text)}
+  .info-box.warn{background:rgba(255,179,0,.07);border:1px solid rgba(255,179,0,.2);color:var(--text)}
+  .info-box.ok{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);color:var(--text)}
+  .info-box .icon{flex-shrink:0;margin-top:1px}
+
+  /* FINAL verification section */
+  .verify-section{
+    margin-top:32px;
+    padding:24px;
+    border:1px solid var(--cyan-dim);
+    border-radius:4px;
+    background:rgba(0,212,255,.04);
+  }
+  .verify-title{
+    color:var(--cyan);font-size:16px;font-weight:700;
+    margin-bottom:16px;
+    text-shadow:var(--glow-c);
+  }
+  .verify-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:8px;
+  }
+  .verify-item{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 10px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:3px;
+    font-size:12px;
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .verify-item:hover{border-color:var(--cyan-dim)}
+  .verify-item.done{border-color:var(--green-dim);background:rgba(0,230,118,.04)}
+  .verify-item .vi-box{
+    width:14px;height:14px;
+    border:1px solid var(--muted);border-radius:2px;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;transition:all .2s;
+  }
+  .verify-item.done .vi-box{background:var(--green);border-color:var(--green);color:#000}
+  .verify-item .vi-cmd{color:var(--cyan);font-size:11px;flex:1}
+  .verify-item .vi-exp{color:var(--text-dim);font-size:10px;margin-left:auto}
+
+  /* ── RESET BTN ── */
+  .reset-bar{
+    text-align:center;
+    padding:24px 0 0;
+  }
+  .reset-btn{
+    background:none;border:1px solid var(--border);
+    color:var(--text-dim);cursor:pointer;
+    padding:8px 20px;border-radius:3px;
+    font-family:inherit;font-size:12px;
+    transition:all .2s;
+  }
+  .reset-btn:hover{border-color:var(--red);color:var(--red)}
+
+  /* cursor blink */
+  .cursor{
+    display:inline-block;width:8px;height:14px;
+    background:var(--green);vertical-align:middle;
+    animation:blink 1s step-end infinite;
+    box-shadow:var(--glow-g);
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* fade in on scroll */
+  .step{animation:fadeUp .4s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* scrollbar */
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+  @media(max-width:600px){
+    .hero h1{font-size:22px}
+    .stats{gap:20px}
+    .step-header{padding:12px 14px}
+    .step-body{padding:0 14px 16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">HACK<span>SETUP</span> <span class="cursor"></span></div>
+    <div class="header-sub">Windows 10/11 · Java · Node · Docker · Claude Code + ECC</div>
+    <div class="progress-wrap">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 / 0</div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ Hackathon Dev Environment</div>
+  <h1>Instalacja Środowiska<br><em>Windows 10 / 11</em></h1>
+  <p class="hero-desc">
+    Kompletny przewodnik instalacji. Klikaj kroki żeby je rozwinąć,
+    odhaczaj co zrobione — postęp zapisywany automatycznie w przeglądarce.
+    Działa w pełni offline.
+  </p>
+  <div class="stats">
+    <div class="stat"><span class="stat-num">13</span><span class="stat-label">Kroków</span></div>
+    <div class="stat"><span class="stat-num">~60</span><span class="stat-label">Minut</span></div>
+    <div class="stat"><span class="stat-num">0 zł</span><span class="stat-label">Koszt narzędzi</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Offline</span></div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- NAV -->
+  <div class="step-nav" id="stepNav">
+    <a href="#s0" id="nav0"><span class="nav-dot"></span>0. Wymagania</a>
+    <a href="#s1" id="nav1"><span class="nav-dot"></span>1. Terminal</a>
+    <a href="#s2" id="nav2"><span class="nav-dot"></span>2. WSL2</a>
+    <a href="#s3" id="nav3"><span class="nav-dot"></span>3. Git</a>
+    <a href="#s4" id="nav4"><span class="nav-dot"></span>4. Node.js</a>
+    <a href="#s5" id="nav5"><span class="nav-dot"></span>5. Java 21</a>
+    <a href="#s6" id="nav6"><span class="nav-dot"></span>6. Maven</a>
+    <a href="#s7" id="nav7"><span class="nav-dot"></span>7. Docker</a>
+    <a href="#s8" id="nav8"><span class="nav-dot"></span>8. IDE</a>
+    <a href="#s9" id="nav9"><span class="nav-dot"></span>9. Claude CLI</a>
+    <a href="#s10" id="nav10"><span class="nav-dot"></span>10. ECC</a>
+    <a href="#s11" id="nav11"><span class="nav-dot"></span>11. Git config</a>
+    <a href="#s12" id="nav12"><span class="nav-dot"></span>12. Weryfikacja</a>
+  </div>
+
+  <!-- ═══ STEP 0 ═══ -->
+  <div class="step" id="s0">
+    <div class="step-header" onclick="toggleStep('s0')">
+      <div class="step-num">0</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Wymagania wstępne <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Sprawdź zanim zaczniesz · ~5 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s0" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Przed instalacją upewnij się że Twój komputer spełnia wymagania i <strong>wirtualizacja jest włączona w BIOS</strong> — bez tego Docker nie ruszy.
+      </div>
+
+      <div class="info-box warn">
+        <span class="icon">⚠</span>
+        <span><strong>Wirtualizacja w BIOS</strong> musi być włączona (Intel VT-x lub AMD-V). Jeśli nie masz pewności — sprawdź przez poniższy test. Wejście do BIOS: F2, F10, Del lub Esc przy starcie komputera.</span>
+      </div>
+
+      <div class="sub-title">Sprawdź wersję Windows</div>
+      <div class="code-block">
+        <div class="code-label"><span>PowerShell (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winver</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Sprawdź wirtualizację</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>(Get-WmiObject Win32_ComputerSystem).HypervisorPresent
+<span class="c"># Oczekiwane: True
+# Jeśli False → włącz w BIOS przed kontynuowaniem</span></pre>
+      </div>
+
+      <div class="sub-title">Sprawdź winget</div>
+      <div class="code-block">
+        <div class="code-label"><span>PowerShell (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget --version
+<span class="c"># Jeśli błąd "nie rozpoznano" → zainstaluj App Installer z Microsoft Store</span>
+
+<span class="c"># Zaktualizuj winget:</span>
+winget upgrade winget --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+
+      <div class="checklist">
+        <div class="checklist-title">Odhacz co sprawdzone:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s0c0')"><div class="check-box">✓</div><div class="check-label">Windows 10 build 19041+ lub Windows 11<span class="note">Sprawdź przez winver</span></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s0c1')"><div class="check-box">✓</div><div class="check-label">Wirtualizacja włączona — <code>HypervisorPresent = True</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s0c2')"><div class="check-box">✓</div><div class="check-label">RAM ≥ 8 GB (16 GB zalecane), wolne miejsce ≥ 20 GB</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s0c3')"><div class="check-box">✓</div><div class="check-label"><code>winget --version</code> działa i jest zaktualizowany</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 1 ═══ -->
+  <div class="step" id="s1">
+    <div class="step-header" onclick="toggleStep('s1')">
+      <div class="step-num">1</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Windows Terminal <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Lepszy terminal, karty, kolory · ~2 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s1" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Zastąpienie starego PowerShell nowym Windows Terminal. Obsługuje karty, znacznie lepsze kolory, wygodniejsza praca przy long sessions hackathonu.
+        <br><br>
+        <strong>Wszystkie kolejne komendy uruchamiaj w Windows Terminal jako Administrator.</strong>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>PowerShell (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id Microsoft.WindowsTerminal -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="info-box info">
+        <span class="icon">ℹ</span>
+        <span>Po instalacji zamknij stary PowerShell. Otwórz Windows Terminal: <strong>Start → wpisz "Terminal" → Kliknij prawym → Uruchom jako Administrator</strong></span>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s1c0')"><div class="check-box">✓</div><div class="check-label">Windows Terminal zainstalowany</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s1c1')"><div class="check-box">✓</div><div class="check-label">Otworzyłem nowe okno <strong>Windows Terminal jako Administrator</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2 ═══ -->
+  <div class="step" id="s2">
+    <div class="step-header" onclick="toggleStep('s2')">
+      <div class="step-num">2</div>
+      <div class="step-title-wrap">
+        <div class="step-title">WSL2 — Windows Subsystem for Linux <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Silnik Dockera · Wymagany restart · ~10 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s2" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Docker Desktop na Windows używa WSL2 jako silnika. Bez WSL2 Docker nie zadziała. Ten krok <strong>wymaga restartu komputera</strong> — postęp w przeglądarce zostanie zachowany.
+      </div>
+      <div class="sub-title">Instalacja WSL2</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>wsl --install</pre>
+      </div>
+      <div class="info-box warn">
+        <span class="icon">⚠</span>
+        <span><strong>Restart wymagany.</strong> Po restarcie Windows Terminal otworzy się i dokończy instalację Ubuntu. Zostaniesz poproszony o podanie nazwy użytkownika i hasła dla Ubuntu — wpisz cokolwiek prostego (używane tylko lokalnie).</span>
+      </div>
+      <div class="sub-title">Po restarcie — konfiguracja</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin) — po restarcie</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Ustaw WSL2 jako domyślną wersję</span>
+wsl --set-default-version 2
+
+<span class="c"># Sprawdź wersję Ubuntu (powinno pokazać VERSION 2)</span>
+wsl -l -v</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Konfiguracja limitów pamięci (16 GB RAM)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Dla 16 GB RAM — zostaw 6 GB dla Windows i IDE</span>
+$wslConfig = "[wsl2]`nmemory=8GB`nprocessors=4`nswap=2GB`nlocalhostForwarding=true"
+$wslConfig | Out-File -FilePath "$env:USERPROFILE\.wslconfig" -Encoding UTF8
+
+<span class="c"># Dla 8 GB RAM — zmień na memory=4GB, processors=2</span>
+
+<span class="c"># Zastosuj</span>
+wsl --shutdown</pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s2c0')"><div class="check-box">✓</div><div class="check-label"><code>wsl --install</code> wykonany, restart komputera wykonany</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s2c1')"><div class="check-box">✓</div><div class="check-label">Ubuntu uruchomione, nazwa użytkownika i hasło ustawione</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s2c2')"><div class="check-box">✓</div><div class="check-label"><code>wsl -l -v</code> pokazuje Ubuntu z VERSION 2</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s2c3')"><div class="check-box">✓</div><div class="check-label">Plik <code>.wslconfig</code> stworzony z limitami pamięci</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3 ═══ -->
+  <div class="step" id="s3">
+    <div class="step-header" onclick="toggleStep('s3')">
+      <div class="step-num">3</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Git <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Kontrola wersji · ~2 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s3" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id Git.Git -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="info-box info">
+        <span class="icon">ℹ</span>
+        <span>Po instalacji <strong>otwórz nowy terminal</strong> — stary nie ma jeszcze zaktualizowanego PATH.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Weryfikacja (nowy terminal)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>git --version
+<span class="c"># Oczekiwane: git version 2.x.x.windows.x</span></pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s3c0')"><div class="check-box">✓</div><div class="check-label"><code>git --version</code> zwraca <code>git version 2.x.x</code></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 4 ═══ -->
+  <div class="step" id="s4">
+    <div class="step-header" onclick="toggleStep('s4')">
+      <div class="step-num">4</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Node.js 22 LTS <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Wymagany przez Claude Code CLI · ~3 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s4" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Claude Code CLI jest napisany w Node.js — bez niego nie uruchomisz Claude Code. Wersja <strong>22 LTS</strong> to aktualny long-term support.
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id OpenJS.NodeJS.LTS -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Weryfikacja (nowy terminal)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>node --version
+<span class="c"># Oczekiwane: v22.x.x</span>
+npm --version
+<span class="c"># Oczekiwane: 10.x.x</span></pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s4c0')"><div class="check-box">✓</div><div class="check-label"><code>node --version</code> → <code>v22.x.x</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s4c1')"><div class="check-box">✓</div><div class="check-label"><code>npm --version</code> → <code>10.x.x</code></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 5 ═══ -->
+  <div class="step" id="s5">
+    <div class="step-header" onclick="toggleStep('s5')">
+      <div class="step-num">5</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Java 21 JDK <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Microsoft OpenJDK · ~5 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s5" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Microsoft Build of OpenJDK 21 — darmowy, bez ograniczeń licencyjnych, identyczny z Oracle JDK dla celów developerskich.
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id Microsoft.OpenJDK.21 -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Weryfikacja (nowy terminal)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>java -version
+<span class="c"># Oczekiwane: openjdk version "21.x.x" ... Microsoft</span>
+javac -version
+<span class="c"># Oczekiwane: javac 21.x.x</span></pre>
+      </div>
+
+      <div class="sub-title">Jeśli java nie jest widoczna po nowym terminalu:</div>
+      <div class="code-block">
+        <div class="code-label"><span>Ręczne ustawienie JAVA_HOME</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Znajdź ścieżkę instalacji</span>
+Get-ChildItem "C:\Program Files\Microsoft" -Filter "jdk-21*"
+
+<span class="c"># Ustaw JAVA_HOME (podmień x.x.x na aktualną wersję z powyższego)</span>
+[System.Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Microsoft\jdk-21.0.x.x-hotspot", "Machine")
+[System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";C:\Program Files\Microsoft\jdk-21.0.x.x-hotspot\bin", "Machine")
+
+<span class="c"># Otwórz nowy terminal i sprawdź ponownie</span></pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s5c0')"><div class="check-box">✓</div><div class="check-label"><code>java -version</code> → <code>openjdk 21.x.x Microsoft</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s5c1')"><div class="check-box">✓</div><div class="check-label"><code>javac -version</code> → <code>javac 21.x.x</code></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 6 ═══ -->
+  <div class="step" id="s6">
+    <div class="step-header" onclick="toggleStep('s6')">
+      <div class="step-num">6</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Apache Maven <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Build system dla Spring Boot · ~3 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s6" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id Apache.Maven -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Weryfikacja (nowy terminal)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>mvn --version
+<span class="c"># Oczekiwane:
+# Apache Maven 3.9.x
+# Java version: 21.x.x   ← MUSI być Java 21!</span></pre>
+      </div>
+      <div class="info-box warn">
+        <span class="icon">⚠</span>
+        <span>Linia <strong>Java version</strong> w output <code>mvn --version</code> musi pokazywać <strong>21</strong>. Jeśli pokazuje 11 lub 17 — Maven używa złego JDK. Popraw JAVA_HOME z poprzedniego kroku.</span>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s6c0')"><div class="check-box">✓</div><div class="check-label"><code>mvn --version</code> → <code>Apache Maven 3.9.x</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s6c1')"><div class="check-box">✓</div><div class="check-label"><code>mvn --version</code> pokazuje <code>Java version: 21</code> (nie 11 lub 17!)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 7 ═══ -->
+  <div class="step" id="s7">
+    <div class="step-header" onclick="toggleStep('s7')">
+      <div class="step-num">7</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Docker <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Rancher Desktop (free) lub Docker Desktop · ~10 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s7" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="info-box warn">
+        <span class="icon">⚠</span>
+        <span><strong>Licencja Docker Desktop:</strong> Firmy >250 pracowników lub >$10M przychodu muszą mieć licencję Business. Jeśli nie jesteście pewni — użyjcie Rancher Desktop (bezpłatny, identyczna funkcjonalność).</span>
+      </div>
+
+      <div class="option-tabs">
+        <button class="opt-tab active" onclick="switchTab(this,'opt-rancher')">⭐ Rancher Desktop (bezpłatny)</button>
+        <button class="opt-tab" onclick="switchTab(this,'opt-docker')">Docker Desktop (licencja)</button>
+      </div>
+
+      <div class="opt-content active" id="opt-rancher">
+        <div class="code-block">
+          <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+          <pre>winget install --id SUSE.RancherDesktop -e --accept-package-agreements --accept-source-agreements</pre>
+        </div>
+        <div class="step-desc">
+          Po instalacji uruchom Rancher Desktop z menu Start i skonfiguruj:
+          <br><br>
+          1. <strong>Container Engine: dockerd (moby)</strong> — wybierz to, NIE containerd<br>
+          2. <strong>Kubernetes: OFF</strong> — nie potrzebujecie, tylko zwalnia zasoby<br>
+          3. Poczekaj aż ikona w zasobniku systemowym zmieni kolor na <strong>zielony</strong> (~3–5 minut)
+        </div>
+      </div>
+
+      <div class="opt-content" id="opt-docker">
+        <div class="code-block">
+          <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+          <pre>winget install --id Docker.DockerDesktop -e --accept-package-agreements --accept-source-agreements</pre>
+        </div>
+        <div class="step-desc">
+          Po instalacji uruchom Docker Desktop i w konfiguracji:<br>
+          <strong>Use WSL 2 instead of Hyper-V: TAK</strong> — kliknij i zaakceptuj.
+        </div>
+      </div>
+
+      <div class="sub-title">Weryfikacja (obie opcje — nowy terminal)</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (nowy)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>docker --version
+<span class="c"># Oczekiwane: Docker version 27.x.x</span>
+
+docker compose version
+<span class="c"># Oczekiwane: Docker Compose version v2.x.x</span>
+
+docker run hello-world
+<span class="c"># Oczekiwane: "Hello from Docker!" bez błędów</span></pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s7c0')"><div class="check-box">✓</div><div class="check-label">Rancher Desktop / Docker Desktop uruchomiony (ikona w zasobniku zielona)</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s7c1')"><div class="check-box">✓</div><div class="check-label"><code>docker --version</code> → <code>Docker version 27.x.x</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s7c2')"><div class="check-box">✓</div><div class="check-label"><code>docker compose version</code> → <code>v2.x.x</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s7c3')"><div class="check-box">✓</div><div class="check-label"><code>docker run hello-world</code> → wyświetla "Hello from Docker!"</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 8 ═══ -->
+  <div class="step" id="s8">
+    <div class="step-header" onclick="toggleStep('s8')">
+      <div class="step-num">8</div>
+      <div class="step-title-wrap">
+        <div class="step-title">IDE — IntelliJ IDEA + VS Code <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Środowiska programistyczne · ~8 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s8" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="sub-title">IntelliJ IDEA Community (BE / DB)</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id JetBrains.IntelliJIDEA.Community -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="step-desc">
+        Po instalacji uruchom IntelliJ i skonfiguruj:<br>
+        <strong>Plugin Lombok</strong> (wymagany!): File → Settings → Plugins → Marketplace → "Lombok" → Install → Restart<br>
+        <strong>JDK</strong>: File → Project Structure → SDKs → + → Add JDK → wskaż folder Java 21
+      </div>
+
+      <hr class="divider">
+
+      <div class="sub-title">VS Code (FE / QA / wszyscy)</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>winget install --id Microsoft.VisualStudioCode -e --silent --accept-package-agreements --accept-source-agreements</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Rozszerzenia VS Code — uruchom przez Ctrl+P</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Dla wszystkich:</span>
+ext install ms-vscode.vscode-typescript-next
+ext install esbenp.prettier-vscode
+ext install ms-azuretools.vscode-docker
+
+<span class="c"># Dla BE / DB (Java):</span>
+ext install redhat.java
+ext install vscjava.vscode-maven
+ext install vscjava.vscode-java-test
+
+<span class="c"># Dla QA (Playwright):</span>
+ext install ms-playwright.playwright</pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s8c0')"><div class="check-box">✓</div><div class="check-label">IntelliJ IDEA Community uruchomia się bez błędów</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s8c1')"><div class="check-box">✓</div><div class="check-label">Plugin <strong>Lombok</strong> zainstalowany w IntelliJ</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s8c2')"><div class="check-box">✓</div><div class="check-label">VS Code uruchomia się bez błędów</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s8c3')"><div class="check-box">✓</div><div class="check-label">Rozszerzenia VS Code zainstalowane (pasujące do roli)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 9 ═══ -->
+  <div class="step" id="s9">
+    <div class="step-header" onclick="toggleStep('s9')">
+      <div class="step-num">9</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Claude Code CLI <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Agent AI · Wymaga konta Claude Max · ~5 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s9" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Claude Code to agent AI działający w terminalu — ma bezpośredni dostęp do plików projektu i może uruchamiać komendy. Każda osoba potrzebuje własnego konta <strong>Claude Max</strong>.
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>npm install -g @anthropic-ai/claude-code</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Weryfikacja (nowy terminal)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>claude --version
+<span class="c"># Oczekiwane: Claude Code v2.x.x</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Logowanie do Claude Max</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>claude login
+<span class="c"># Otworzy przeglądarkę → zaloguj konto z subskrypcją Claude Max
+# Jeśli przeglądarka się nie otwiera: skopiuj URL z terminala i otwórz ręcznie</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Test uruchomienia</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>mkdir C:\projects\test-claude
+cd C:\projects\test-claude
+claude
+<span class="c"># Powinno uruchomić sesję. Wpisz: hello
+# Wpisz: /exit żeby zamknąć</span></pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s9c0')"><div class="check-box">✓</div><div class="check-label"><code>claude --version</code> → <code>Claude Code v2.x.x</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s9c1')"><div class="check-box">✓</div><div class="check-label"><code>claude login</code> zakończony — zalogowany na konto Claude Max</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s9c2')"><div class="check-box">✓</div><div class="check-label">Sesja testowa <code>claude</code> uruchomia się bez błędów</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 10 ═══ -->
+  <div class="step" id="s10">
+    <div class="step-header" onclick="toggleStep('s10')">
+      <div class="step-num">10</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Everything Claude Code (ECC) <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Skills · Agenci · Komendy · ~10 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s10" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        ECC rozszerza Claude Code o 28 wyspecjalizowanych agentów, 119 skillsów i 60 komend. Instalacja w 4 krokach.
+      </div>
+
+      <div class="sub-title">A — Sklonuj repo i zainstaluj zależności</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>cd $env:USERPROFILE
+git clone https://github.com/affaan-m/everything-claude-code.git
+cd everything-claude-code
+npm install</pre>
+      </div>
+
+      <div class="sub-title">B — Uruchom instalator Windows</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Jeśli pojawi się błąd ExecutionPolicy:</span>
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+.\install.ps1 java</pre>
+      </div>
+
+      <div class="sub-title">C — Skopiuj skills i agentów (pewna metoda)</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre><span class="c"># Stwórz katalogi</span>
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\agents"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\commands"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\rules"
+
+<span class="c"># Rules — zawsze aktywne zasady</span>
+Copy-Item -Recurse -Force "$env:USERPROFILE\everything-claude-code\rules\common\*" "$env:USERPROFILE\.claude\rules\"
+
+<span class="c"># Skills Spring Boot</span>
+$skills = @("springboot-patterns","springboot-tdd","springboot-security","springboot-verification","docker-patterns","api-design","database-migrations","e2e-testing","tdd-workflow","backend-patterns")
+foreach ($s in $skills) {
+    if (Test-Path "$env:USERPROFILE\everything-claude-code\skills\$s") {
+        Copy-Item -Recurse -Force "$env:USERPROFILE\everything-claude-code\skills\$s" "$env:USERPROFILE\.claude\skills\"
+        Write-Host "✓ $s"
+    }
+}
+
+<span class="c"># Agenci Java</span>
+$agents = @("java-reviewer.md","java-build-resolver.md","database-reviewer.md","tdd-guide.md","planner.md","architect.md","code-reviewer.md","security-reviewer.md","e2e-runner.md","refactor-cleaner.md")
+foreach ($a in $agents) {
+    if (Test-Path "$env:USERPROFILE\everything-claude-code\agents\$a") {
+        Copy-Item -Force "$env:USERPROFILE\everything-claude-code\agents\$a" "$env:USERPROFILE\.claude\agents\"
+        Write-Host "✓ $a"
+    }
+}
+
+<span class="c"># Commands</span>
+Copy-Item -Recurse -Force "$env:USERPROFILE\everything-claude-code\commands\*" "$env:USERPROFILE\.claude\commands\"
+Write-Host "✓ Commands done"</pre>
+      </div>
+
+      <div class="sub-title">D — Konfiguracja settings.json</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal (Admin)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>$settings = @{
+    model = "sonnet"
+    env   = @{
+        MAX_THINKING_TOKENS             = "10000"
+        CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "50"
+        CLAUDE_CODE_SUBAGENT_MODEL      = "haiku"
+    }
+} | ConvertTo-Json -Depth 3
+
+$settings | Out-File -FilePath "$env:USERPROFILE\.claude\settings.json" -Encoding UTF8
+Write-Host "✓ settings.json zapisany"
+
+<span class="c"># Sprawdź że wygląda poprawnie:</span>
+Get-Content "$env:USERPROFILE\.claude\settings.json"</pre>
+      </div>
+
+      <div class="sub-title">E — Zainstaluj plugin ECC w sesji Claude Code</div>
+      <div class="code-block">
+        <div class="code-label"><span>Windows Terminal — uruchom Claude</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>mkdir C:\projects\hackathon-setup-test -Force
+cd C:\projects\hackathon-setup-test
+claude</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Wewnątrz sesji Claude Code — wpisz kolejno</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>/plugin marketplace add affaan-m/everything-claude-code
+/plugin install everything-claude-code@everything-claude-code
+/plugin list everything-claude-code@everything-claude-code
+<span class="c"># Powinna pojawić się lista 60+ komend</span>
+/exit</pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s10c0')"><div class="check-box">✓</div><div class="check-label">Repo ECC sklonowane do <code>%USERPROFILE%\everything-claude-code</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s10c1')"><div class="check-box">✓</div><div class="check-label"><code>.\install.ps1 java</code> wykonany bez błędów</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s10c2')"><div class="check-box">✓</div><div class="check-label">Skills i agenci skopiowani (skrypt PowerShell wykonany)</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s10c3')"><div class="check-box">✓</div><div class="check-label"><code>settings.json</code> stworzony z <code>model: sonnet</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s10c4')"><div class="check-box">✓</div><div class="check-label">Plugin ECC zainstalowany — <code>/plan</code> działa w sesji claude</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 11 ═══ -->
+  <div class="step" id="s11">
+    <div class="step-header" onclick="toggleStep('s11')">
+      <div class="step-num">11</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Git — konfiguracja globalna <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Tożsamość w commitach, SSH · ~5 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s11" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="code-block">
+        <div class="code-label"><span>Konfiguracja globalna (zmień dane na swoje)</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>git config --global user.name "Imię Nazwisko"
+git config --global user.email "email@firma.pl"
+git config --global core.autocrlf input
+git config --global core.editor "code --wait"
+git config --global init.defaultBranch main
+git config --global pull.rebase true
+
+<span class="c"># Sprawdź</span>
+git config --list --global</pre>
+      </div>
+      <div class="info-box info">
+        <span class="icon">ℹ</span>
+        <span><code>core.autocrlf input</code> jest krytyczne w zespole — zapobiega problemom z końcami linii w diff-ach (Windows używa CRLF, Linux LF).</span>
+      </div>
+      <div class="sub-title">SSH klucze (jeśli używacie GitHub/GitLab przez SSH)</div>
+      <div class="code-block">
+        <div class="code-label"><span>Generowanie klucza SSH</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>ssh-keygen -t ed25519 -C "email@firma.pl"
+<span class="c"># Enter na wszystkie pytania (domyślne ścieżki, brak passphrase OK na hackathon)</span>
+
+<span class="c"># Wyświetl klucz publiczny — skopiuj i dodaj w GitHub: Settings → SSH Keys</span>
+Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub"</pre>
+      </div>
+      <div class="sub-title">Sklonuj shared repo</div>
+      <div class="code-block">
+        <div class="code-label"><span>Sklonowanie projektu</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>mkdir C:\projects -Force
+cd C:\projects
+git clone git@github.com:wasza-org/hackathon-app.git
+cd hackathon-app
+git branch -a</pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s11c0')"><div class="check-box">✓</div><div class="check-label"><code>git config user.name</code> i <code>user.email</code> ustawione</div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s11c1')"><div class="check-box">✓</div><div class="check-label">Shared repo sklonowane do <code>C:\projects\hackathon-app</code></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s11c2')"><div class="check-box">✓</div><div class="check-label"><code>git status</code> w repo działa bez błędów</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 12 ═══ -->
+  <div class="step" id="s12">
+    <div class="step-header" onclick="toggleStep('s12')">
+      <div class="step-num">12</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Weryfikacja całości <span class="tag tag-req">Wymagane</span></div>
+        <div class="step-meta">Skrypt weryfikacyjny + final checklist · ~5 min</div>
+      </div>
+      <div class="step-done-badge" id="badge-s12" style="display:none">✓ DONE</div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="step-desc">
+        Uruchom ten skrypt — każda pozycja powinna dać zielone <strong>✓</strong>. Zero błędów = gotowy na hackathon.
+      </div>
+      <div class="code-block">
+        <div class="code-label"><span>Skrypt weryfikacyjny — wklej i uruchom w całości</span><button class="copy-btn" onclick="copyCode(this)">Kopiuj</button></div>
+        <pre>$errors = 0
+function Check($name, $cmd, $pattern) {
+    try {
+        $result = Invoke-Expression $cmd 2>&1 | Out-String
+        if ($result -match $pattern) { Write-Host "  ✓ $name" -ForegroundColor Green }
+        else { Write-Host "  ✗ $name  → $($result.Trim())" -ForegroundColor Red; $script:errors++ }
+    } catch { Write-Host "  ✗ $name  → ERROR: $_" -ForegroundColor Red; $script:errors++ }
+}
+
+Write-Host "`n═══ HACKATHON SETUP WERYFIKACJA ═══" -ForegroundColor Cyan
+Write-Host "[ Narzędzia ]" -ForegroundColor Yellow
+Check "Git"              "git --version"           "git version"
+Check "Node.js 22"      "node --version"           "v2[2-9]\.|v[3-9][0-9]\."
+Check "npm"             "npm --version"            "[0-9]+\.[0-9]+"
+Check "Java 21"         "java -version 2>&1"       "21\."
+Check "javac 21"        "javac -version 2>&1"      "21\."
+Check "Maven 3.9"       "mvn --version"            "Apache Maven 3\."
+Check "Maven + Java 21" "mvn --version"            "Java version: 21"
+Write-Host "[ Docker ]" -ForegroundColor Yellow
+Check "Docker daemon"   "docker --version"         "Docker version"
+Check "Docker Compose"  "docker compose version"   "Docker Compose"
+Check "Docker test"     "docker run --rm hello-world 2>&1" "Hello from Docker"
+Write-Host "[ Claude Code ]" -ForegroundColor Yellow
+Check "Claude Code CLI" "claude --version"         "Claude Code"
+$cd = "$env:USERPROFILE\.claude"
+if (Test-Path "$cd\settings.json")   { Write-Host "  ✓ settings.json" -ForegroundColor Green } else { Write-Host "  ✗ settings.json BRAK" -ForegroundColor Red; $errors++ }
+$nc = (Get-ChildItem "$cd\commands" -EA SilentlyContinue).Count
+if ($nc -gt 10) { Write-Host "  ✓ ECC commands ($nc)" -ForegroundColor Green } else { Write-Host "  ✗ ECC commands ($nc)" -ForegroundColor Red; $errors++ }
+$na = (Get-ChildItem "$cd\agents"   -EA SilentlyContinue).Count
+if ($na -gt 5)  { Write-Host "  ✓ ECC agents ($na)"   -ForegroundColor Green } else { Write-Host "  ✗ ECC agents ($na)"   -ForegroundColor Red; $errors++ }
+Write-Host "[ WSL2 ]" -ForegroundColor Yellow
+Check "WSL2" "wsl -l -v" "2"
+Write-Host ""
+if ($errors -eq 0) { Write-Host "  ✅ WSZYSTKO OK — gotowy!" -ForegroundColor Green }
+else               { Write-Host "  ❌ $errors błąd(ów) — napraw przed hackathon" -ForegroundColor Red }
+Write-Host "════════════════════════════════════`n" -ForegroundColor Cyan</pre>
+      </div>
+      <div class="checklist">
+        <div class="checklist-title">Odhacz po uruchomieniu skryptu:</div>
+        <div class="check-item" onclick="toggleCheck(this,'s12c0')"><div class="check-box">✓</div><div class="check-label">Skrypt weryfikacyjny uruchomiony — wynik: <strong>✅ WSZYSTKO OK</strong></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'s12c1')"><div class="check-box">✓</div><div class="check-label">W sesji claude: <code>/plan "test"</code> działa (ECC command aktywny)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FINAL VERIFICATION ═══ -->
+  <div class="verify-section">
+    <div class="verify-title">⚡ Final Checklist — przed hackathon</div>
+    <div class="verify-grid">
+      <div class="verify-item" onclick="toggleVerify(this,'v0')"><div class="vi-box">✓</div><div class="vi-cmd">git --version</div><div class="vi-exp">2.x.x</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v1')"><div class="vi-box">✓</div><div class="vi-cmd">node --version</div><div class="vi-exp">v22.x.x</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v2')"><div class="vi-box">✓</div><div class="vi-cmd">java -version</div><div class="vi-exp">openjdk 21</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v3')"><div class="vi-box">✓</div><div class="vi-cmd">mvn --version</div><div class="vi-exp">Maven 3.9 + Java 21</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v4')"><div class="vi-box">✓</div><div class="vi-cmd">docker run hello-world</div><div class="vi-exp">Hello from Docker</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v5')"><div class="vi-box">✓</div><div class="vi-cmd">claude --version</div><div class="vi-exp">v2.x.x</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v6')"><div class="vi-box">✓</div><div class="vi-cmd">claude login</div><div class="vi-exp">Claude Max</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v7')"><div class="vi-box">✓</div><div class="vi-cmd">~/.claude/settings.json</div><div class="vi-exp">model: sonnet</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v8')"><div class="vi-box">✓</div><div class="vi-cmd">~/.claude/commands/</div><div class="vi-exp">&gt;10 plików</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v9')"><div class="vi-box">✓</div><div class="vi-cmd">~/.claude/agents/</div><div class="vi-exp">&gt;5 plików</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v10')"><div class="vi-box">✓</div><div class="vi-cmd">ECC /plan działa</div><div class="vi-exp">w sesji claude</div></div>
+      <div class="verify-item" onclick="toggleVerify(this,'v11')"><div class="vi-box">✓</div><div class="vi-cmd">Repo sklonowane</div><div class="vi-exp">C:\projects\...</div></div>
+    </div>
+  </div>
+
+  <div class="reset-bar">
+    <button class="reset-btn" onclick="resetAll()">⟳ Resetuj cały postęp</button>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+  const STORAGE_KEY = 'hacksetup_v2';
+
+  // ── persistence ──
+  function save(key, val) {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      d[key] = val;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    } catch(e){}
+  }
+  function load(key) {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return d[key];
+    } catch(e){ return undefined; }
+  }
+  function loadAll() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch(e){ return {}; }
+  }
+
+  // ── step toggle ──
+  function toggleStep(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains('open');
+    el.classList.toggle('open', !isOpen);
+    save('open_' + id, !isOpen);
+  }
+
+  // ── checkbox toggle ──
+  function toggleCheck(el, key) {
+    const checked = !el.classList.contains('checked');
+    el.classList.toggle('checked', checked);
+    el.querySelector('.check-box').textContent = checked ? '✓' : '';
+    save(key, checked);
+    updateStepDone(el.closest('.step'));
+    updateProgress();
+  }
+
+  function updateStepDone(stepEl) {
+    if (!stepEl) return;
+    const items = stepEl.querySelectorAll('.check-item');
+    const done = stepEl.querySelectorAll('.check-item.checked');
+    const isDone = items.length > 0 && done.length === items.length;
+    stepEl.classList.toggle('step-done', isDone);
+    const badge = stepEl.querySelector('.step-done-badge');
+    if (badge) badge.style.display = isDone ? 'block' : 'none';
+    // update nav
+    const id = stepEl.id;
+    const navNum = id.replace('s','');
+    const navEl = document.getElementById('nav' + navNum);
+    if (navEl) {
+      navEl.classList.toggle('done', isDone);
+      navEl.querySelector('.nav-dot').style.background = isDone ? 'var(--green)' : '';
+    }
+  }
+
+  // ── verify items ──
+  function toggleVerify(el, key) {
+    const done = !el.classList.contains('done');
+    el.classList.toggle('done', done);
+    el.querySelector('.vi-box').textContent = done ? '✓' : '';
+    save('vi_' + key, done);
+    updateProgress();
+  }
+
+  // ── tabs ──
+  function switchTab(btn, contentId) {
+    const container = btn.closest('.step-body');
+    container.querySelectorAll('.opt-tab').forEach(t => t.classList.remove('active'));
+    container.querySelectorAll('.opt-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(contentId).classList.add('active');
+  }
+
+  // ── copy ──
+  function copyCode(btn) {
+    const block = btn.closest('.code-block');
+    const pre = block.querySelector('pre');
+    const text = pre.innerText || pre.textContent;
+    navigator.clipboard.writeText(text.trim()).then(() => {
+      btn.textContent = 'Skopiowano!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Kopiuj'; btn.classList.remove('copied'); }, 1800);
+    }).catch(() => {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text.trim();
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'Skopiowano!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Kopiuj'; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  // ── progress ──
+  function updateProgress() {
+    const allChecks = document.querySelectorAll('.check-item, .verify-item');
+    const doneChecks = document.querySelectorAll('.check-item.checked, .verify-item.done');
+    const total = allChecks.length;
+    const done = doneChecks.length;
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = done + ' / ' + total;
+  }
+
+  // ── reset ──
+  function resetAll() {
+    if (!confirm('Zresetować cały postęp? Odhaczeń nie da się cofnąć.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+
+  // ── restore state ──
+  function restoreState() {
+    const data = loadAll();
+
+    // restore checkboxes
+    document.querySelectorAll('.check-item').forEach(el => {
+      const onclick = el.getAttribute('onclick');
+      const m = onclick && onclick.match(/'([^']+)'/g);
+      if (m && m.length >= 2) {
+        const key = m[1].replace(/'/g,'');
+        if (data[key]) {
+          el.classList.add('checked');
+          el.querySelector('.check-box').textContent = '✓';
+        }
+      }
+    });
+
+    // restore verify items
+    document.querySelectorAll('.verify-item').forEach(el => {
+      const onclick = el.getAttribute('onclick');
+      const m = onclick && onclick.match(/'([^']+)'/g);
+      if (m && m.length >= 2) {
+        const key = m[1].replace(/'/g,'');
+        if (data['vi_' + key]) {
+          el.classList.add('done');
+          el.querySelector('.vi-box').textContent = '✓';
+        }
+      }
+    });
+
+    // restore open steps
+    document.querySelectorAll('.step').forEach(el => {
+      const isOpen = data['open_' + el.id];
+      if (isOpen) el.classList.add('open');
+    });
+
+    // update step done state
+    document.querySelectorAll('.step').forEach(el => updateStepDone(el));
+    updateProgress();
+  }
+
+  // ── init ──
+  document.addEventListener('DOMContentLoaded', () => {
+    restoreState();
+
+    // open first incomplete step by default if nothing was saved
+    const data = loadAll();
+    const hasAnyOpen = Object.keys(data).some(k => k.startsWith('open_') && data[k]);
+    if (!hasAnyOpen) {
+      const firstStep = document.querySelector('.step');
+      if (firstStep) {
+        firstStep.classList.add('open');
+        save('open_' + firstStep.id, true);
+      }
+    }
+  });
+</script>
+</body>
+</html>
